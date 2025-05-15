@@ -316,9 +316,86 @@ class ProductoController extends Controller
             ->take(4)
             ->all();
 
+        // Obtener el carrito de la sesión
+        $carrito = request()->session()->get('temp_cart', []);
+
         return view('producto.show', [
             'producto' => $producto,
-            'relacionados' => $relacionados
+            'relacionados' => $relacionados,
+            'carrito' => $carrito // Pasamos el carrito de la sesión
         ]);
+    }
+
+    public function addToCart($id)
+    {
+        $producto = collect($this->productos)->firstWhere('id', (int)$id);
+
+        if(!$producto) {
+            return redirect()->back();
+        }
+
+        $carrito = request()->session()->get('temp_cart', []);
+
+        if(isset($carrito[$id])) {
+            $carrito[$id]['cantidad']++;
+        } else {
+            $carrito[$id] = [
+                "id" => $producto['id'],
+                "nombre" => $producto['nombre'],
+                "precio" => $producto['precio'],
+                "cantidad" => 1,
+                "imagen" => $producto['imagen']
+            ];
+        }
+
+        request()->session()->put('temp_cart', $carrito);
+
+        return redirect()->back();
+    }
+
+    public function viewCart()
+    {
+        $carrito = request()->session()->get('temp_cart', []);
+        $total = 0;
+
+        foreach($carrito as $item) {
+            $total += $item['precio'] * $item['cantidad'];
+        }
+
+        return view('components.cart', [
+            'carrito' => $carrito,
+            'total' => $total
+        ]);
+    }
+
+    public function updateCart(Request $request, $id)
+    {
+        $carrito = request()->session()->get('temp_cart', []);
+
+        if(isset($carrito[$id])) {
+            $nuevaCantidad = (int)$request->cantidad;
+
+            // Validar que la cantidad sea mínimo 1
+            if($nuevaCantidad < 1) {
+                $nuevaCantidad = 1;
+            }
+
+            $carrito[$id]['cantidad'] = $nuevaCantidad;
+            request()->session()->put('temp_cart', $carrito);
+        }
+
+        return redirect()->route('cart.view');
+    }
+
+    public function removeFromCart($id)
+    {
+        $carrito = request()->session()->get('temp_cart', []);
+
+        if(isset($carrito[$id])) {
+            unset($carrito[$id]);
+            request()->session()->put('temp_cart', $carrito);
+        }
+
+        return redirect()->route('cart.view');
     }
 }

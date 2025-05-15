@@ -67,9 +67,11 @@
 
                 <!-- Botones de acción -->
                 <div class="flex space-x-4">
+                  <a href="{{route('cart.add', $producto['id'])}}">
                     <button class="flex-1 bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition duration-300">
                         Añadir al carrito
                     </button>
+                  </a>
                     <button class="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition duration-300">
                         Comprar ahora
                     </button>
