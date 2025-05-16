@@ -1,41 +1,31 @@
-# Usa la imagen oficial de PHP con Apache
-FROM php:8.2-apache
+FROM php:8.2-fpm
 
-# Instala dependencias del sistema (sin Node.js ni MySQL)
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    curl \
-    libzip-dev \
-    zip \
-    && docker-php-ext-install zip \
-    && a2enmod rewrite
+    git unzip curl libzip-dev zip nodejs npm && \
+    docker-php-ext-install zip pdo pdo_mysql
 
-# Instala Composer globalmente
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configura el directorio de trabajo
-WORKDIR /var/www/html
+# Establecer directorio de trabajo
+WORKDIR /var/www
 
-# Copia los archivos del proyecto (EXCLUYENDO node_modules y archivos innecesarios)
+# Copiar todos los archivos del proyecto
 COPY . .
 
-# Instala solo dependencias PHP (sin dev)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Instalar dependencias PHP
+RUN composer install --no-dev --optimize-autoloader
 
-# Configura permisos para Laravel
-RUN chown -R www-data:www-data /var/www/html/storage \
-    && chmod -R 775 /var/www/html/storage
+# Instalar y compilar assets con Vite
+RUN npm install && npm run build
 
-# Configura el virtual host de Apache
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Establecer permisos para Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Habilita el sitio y reinicia Apache
-RUN a2ensite 000-default.conf \
-    && service apache2 restart
+# Exponer el puerto del servidor embebido
+EXPOSE 8000
 
-# Puerto expuesto (Apache usa el 80 por defecto)
-EXPOSE 80
-
-# Comando de inicio
-CMD ["apache2-foreground"]
+# Iniciar Laravel
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
