@@ -4,19 +4,19 @@
           <div>
               <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
               <ul class="space-y-2">
-                  <li><a  class="hover:text-gray-400">Hombre</a></li>
-                  <li><a  class="hover:text-gray-400">Mujer</a></li>
-                  <li><a  class="hover:text-gray-400">Niños</a></li>
-                  <li><a  class="hover:text-gray-400">Ofertas</a></li>
+                  <li><a href="#" class="hover:text-gray-400">Hombre</a></li>
+                  <li><a href="#" class="hover:text-gray-400">Mujer</a></li>
+                  <li><a href="#" class="hover:text-gray-400">Niños</a></li>
+                  <li><a href="#" class="hover:text-gray-400">Ofertas</a></li>
               </ul>
           </div>
 
           <div>
-              <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+              <h3 class="text-lg font-semibold mb-4">Legal</h3>
               <ul class="space-y-2">
-                  <li><a href="mailto:info@tutienda.com" class="hover:text-gray-400">info@tutienda.com</a></li>
-                  <li><a href="tel:+123456789" class="hover:text-gray-400">+1 234 567 89</a></li>
-                  <li>Dirección: Calle Falsa 123, Ciudad, País</li>
+                  <li><a href="{{ route('terms') }}" class="hover:text-gray-400">Términos y Condiciones</a></li>
+                  <li><a href="{{ route('privacy') }}" class="hover:text-gray-400">Políticas de Privacidad</a></li>
+                  <li><a href="{{ route('contact') }}" class="hover:text-gray-400">Contacto</a></li>
               </ul>
           </div>
 
