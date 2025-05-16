@@ -258,3 +258,10 @@ Route::get('/logout', function() {
     return redirect()->route('main')->with('success', 'Sesión cerrada');
 })->name('logout');
 
+Route::get('/clear', function () {
+  Artisan::call('config:clear');
+  Artisan::call('route:clear');
+  Artisan::call('view:clear');
+  Artisan::call('cache:clear');
+  return 'Cache cleared';
+});
