@@ -187,6 +187,11 @@ Route::get('/contact-submit', function(Request $request) {
     return back()->with('success', '¡Mensaje enviado! (Simulación)');
 });
 
+Route::view('/faq', 'components.faq')->name('faq');
+
+Route::view('/ayuda', 'components.ayuda')->name('help');
+
+
 // =============================================
 // Autenticación simulada (GET)
 // =============================================

@@ -162,9 +162,11 @@ $reseñas = [
                         Añadir al carrito
                     </button>
                   </a>
+                  <a href="{{ route('payment')}}">
                     <button class="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition duration-300">
                         Comprar ahora
                     </button>
+                  </a>
                 </div>
             </div>
         </div>
