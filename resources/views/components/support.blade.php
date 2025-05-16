@@ -1,4 +1,4 @@
-@extends('base') {{-- Usa el layout base que tengas --}}
+@extends('welcome')
 
 @section('content')
 <div class="max-w-4xl mx-auto py-12 px-4">

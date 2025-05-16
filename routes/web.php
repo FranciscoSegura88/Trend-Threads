@@ -189,7 +189,7 @@ Route::get('/contact-submit', function(Request $request) {
 
 Route::view('/faq', 'components.faq')->name('faq');
 
-Route::view('/ayuda', 'components.ayuda')->name('help');
+Route::view('/ayuda', 'components.support')->name('help');
 
 
 // =============================================
