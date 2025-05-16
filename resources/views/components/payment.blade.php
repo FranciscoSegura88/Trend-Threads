@@ -94,7 +94,6 @@
                       Realizar pago
                   </button>
                 </form>
-
             </div>
         </div>
 
@@ -102,6 +101,23 @@
         <div class="md:w-1/3">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Resumen del pedido</h2>
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <!-- Sección de cupón -->
+                <div class="mb-4">
+                    <div class="flex items-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">¿Tienes un cupón de descuento?</span>
+                    </div>
+                    <div class="flex">
+                        <input type="text" id="coupon-code" placeholder="Código del cupón" class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500">
+                        <button id="apply-coupon" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-r-md transition duration-200">
+                            Aplicar
+                        </button>
+                    </div>
+                    <p id="coupon-message" class="text-sm mt-1 hidden"></p>
+                </div>
+
                 <div class="space-y-4">
                     @foreach($carrito as $item)
                     <div class="flex justify-between">
@@ -119,17 +135,77 @@
                         <span class="text-gray-600">Subtotal</span>
                         <span class="font-medium">${{ number_format($total, 2) }}</span>
                     </div>
+
+                    <!-- Descuento por cupón -->
+                    <div id="discount-row" class="flex justify-between text-green-600">
+                        <span>Descuento</span>
+                        <span id="discount-amount">-$0.00</span>
+                    </div>
+
                     <div class="flex justify-between">
                         <span class="text-gray-600">Envío</span>
                         <span class="font-medium">$0.00</span>
                     </div>
                     <div class="flex justify-between text-lg font-bold text-gray-800 pt-2">
                         <span>Total</span>
-                        <span>${{ number_format($total, 2) }}</span>
+                        <span id="total-amount">${{ number_format($total, 2) }}</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const couponCodeInput = document.getElementById('coupon-code');
+        const applyCouponBtn = document.getElementById('apply-coupon');
+        const couponMessage = document.getElementById('coupon-message');
+        const discountRow = document.getElementById('discount-row');
+        const discountAmount = document.getElementById('discount-amount');
+        const totalAmount = document.getElementById('total-amount');
+
+        // Cupones válidos (en un sistema real esto vendría de tu backend)
+        const validCoupons = {
+            'DESCUENTO10': 10, // 10% de descuento
+            'VERANO20': 20,    // 20% de descuento
+            'BIENVENIDA15': 15 // 15% de descuento
+        };
+
+        applyCouponBtn.addEventListener('click', function() {
+            const couponCode = couponCodeInput.value.trim().toUpperCase();
+            const subtotal = {{ $total }};
+
+            if (!couponCode) {
+                showCouponMessage('Por favor ingresa un código de cupón', 'text-red-500');
+                return;
+            }
+
+            if (validCoupons[couponCode]) {
+                const discountPercentage = validCoupons[couponCode];
+                const discountValue = (subtotal * discountPercentage) / 100;
+                const newTotal = subtotal - discountValue;
+
+                // Mostrar el descuento
+                discountAmount.textContent = `-$${discountValue.toFixed(2)}`;
+                discountRow.classList.remove('hidden');
+
+                // Actualizar el total
+                totalAmount.textContent = `$${newTotal.toFixed(2)}`;
+
+                showCouponMessage(`¡Cupón aplicado! ${discountPercentage}% de descuento`, 'text-green-500');
+            } else {
+                showCouponMessage('Cupón no válido o ha expirado', 'text-red-500');
+                discountRow.classList.add('hidden');
+                totalAmount.textContent = `$${subtotal.toFixed(2)}`;
+            }
+        });
+
+        function showCouponMessage(message, colorClass) {
+            couponMessage.textContent = message;
+            couponMessage.className = `text-sm mt-1 ${colorClass}`;
+            couponMessage.classList.remove('hidden');
+        }
+    });
+</script>
 @endsection
